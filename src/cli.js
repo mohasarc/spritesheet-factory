@@ -15,6 +15,7 @@ function parseArgumentsIntoOptions(rawArgs){
             '-i': '--src',
             '-o': '--target',
             '-m': '--match',
+            '-e': '--e',
         },
         {
             argv: rawArgs.slice(2),
