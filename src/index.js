@@ -80,8 +80,11 @@ export function generateSpritesheet(options) {
          height: MAX_HEIGHT,
       })
          .then(b64 => {
-            spritesheetJson.meta.image = b64;
-   
+            if (options.embedBase64)
+               spritesheetJson.meta.image = b64;
+            else
+               spritesheetJson.meta.image = 'spritesheet.png';
+
             var jsonContent = JSON.stringify(spritesheetJson);
             fs.writeFile(path.join(destinationPath, "spritesheet.json"), jsonContent, 'utf8', function (err) {
                if (err) {

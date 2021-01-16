@@ -6,6 +6,7 @@ function parseArgumentsIntoOptions(rawArgs){
             '--src': String,
             '--target': String,
             '--match': String,
+            '--embed': Boolean,
             // Aliases
             '-i': '--src',
             '-o': '--target',
@@ -19,7 +20,8 @@ function parseArgumentsIntoOptions(rawArgs){
     return {
         inputFolder: ARGS['--src'] || ARGS._[0] || './',
         outputFolder: ARGS['--target'] || ARGS._[1] || './',
-        match: ARGS['--match'] || '*.*',
+        match: ARGS['--match'] || '*.png',
+        embedBase64: ARGS['--embed'] || false,
     };
 }
 
@@ -30,5 +32,5 @@ async function promptForMissingOptions(options){
 export function cli (args){
     let options = parseArgumentsIntoOptions(args);
     generateSpritesheet(options);
-    // console.log(options);
+    console.log(options);
 }
