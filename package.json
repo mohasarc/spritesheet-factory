@@ -30,5 +30,9 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Mohammed S. Yaseen",
-  "license": "MIT"
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mohasarc/spritesheet-factory/issues"
+  },
+  "homepage": "https://github.com/mohasarc/spritesheet-factory#readme"
 }
