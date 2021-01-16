@@ -8,6 +8,9 @@ const sizeOf = require('image-size');
 const MAX_WIDTH = 1920;
 const MAX_HEIGHT = 3642;
 
+/**
+ * @param {Object} options Options used for generating the spritesheet
+ */
 export function generateSpritesheet(options) {
    const directoryPath = options.inputFolder;
    const destinationPath = options.outputFolder;
@@ -31,13 +34,11 @@ export function generateSpritesheet(options) {
       }
    };
    
-   glob(path.join(directoryPath, match), {}, (err, files)=>{
+   glob(path.join(directoryPath, match), {}, (err, files) => {
       if (err) {
          return console.log('Unable to scan directory: ' + err);
       }
 
-      console.log(files);
-   
       files.forEach(function (file) {
          var filePath = path.join(directoryPath, file);
          var dimensions = sizeOf(filePath);
@@ -45,9 +46,8 @@ export function generateSpritesheet(options) {
          images.push({ src: filePath, x: 0, y: 0, dimensions, file });
       });
    
-   
+      // Sort the images from smallest height to largest height
       images.sort((a, b) => { return a.dimensions.height - b.dimensions.height });
-   
    
       images.map(image => {
          if (curX + image.dimensions.width > MAX_WIDTH) {

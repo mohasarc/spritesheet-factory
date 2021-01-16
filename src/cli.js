@@ -1,5 +1,9 @@
 import arg from 'arg';
 import { generateSpritesheet } from '.';
+
+/**
+ * @param {String} rawArgs User's input
+ */
 function parseArgumentsIntoOptions(rawArgs){
     const ARGS = arg(
         {
@@ -29,8 +33,11 @@ async function promptForMissingOptions(options){
 
 }
 
+/**
+ * 
+ * @param {Array} args User input (arguments arrays)
+ */
 export function cli (args){
     let options = parseArgumentsIntoOptions(args);
     generateSpritesheet(options);
-    console.log(options);
 }
