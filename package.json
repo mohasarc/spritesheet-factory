@@ -22,7 +22,8 @@
     "cli",
     "spritesheet-factory",
     "spritesheet",
-    "pixi.js"
+    "pixi.js",
+    "texture"
   ],
   "devDependencies": {},
   "scripts": {
