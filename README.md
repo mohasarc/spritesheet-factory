@@ -12,7 +12,7 @@ npm i spritesheet-factory -g
 ```
 
 ## Usage
-```js
+```
 spritesheet-factory .\source\path .\output\folder\path -m *.png -e
 ```
 The source path would include all the images to be added to the spritesheet in png format.
@@ -21,4 +21,4 @@ The source path would include all the images to be added to the spritesheet in p
 |option|Alias|Description|Default Value|
 |---|---|---|---|
 |--match|-m|Specifies what files to match from the input directory|*.png|
-|--embed|-e|Specifies whether to embed the image as base64 in the JSON file|false|
+|--embed|-e|Specifies whether to embed the image as base64 in the JSON file|`false`|
