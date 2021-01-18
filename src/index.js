@@ -1,9 +1,8 @@
+import { pack, PACKING_ALGORITHMS } from './packer';
+import { format } from './spritesheet-formatter';
+
 const mergeImages = require('merge-images');
 const { Canvas, Image } = require('canvas');
-const path = require('path');
-const fs = require('fs');
-const glob = require("glob");
-const sizeOf = require('image-size');
 
 const MAX_WIDTH = 1920;
 const MAX_HEIGHT = 3642;
@@ -11,95 +10,34 @@ const MAX_HEIGHT = 3642;
 /**
  * @param {Object} options Options used for generating the spritesheet
  */
-export function generateSpritesheet(options) {
-   const directoryPath = options.inputFolder;
-   const destinationPath = options.outputFolder;
-   const match = options.match;
+export async function execute(images, options) {
+   var meta = {imageName:'', imageBase64:'', format: '', size: { w: MAX_WIDTH, h: MAX_HEIGHT }, scale: 1 };
+   
+   
+   images = pack(images, PACKING_ALGORITHMS.SIMPLE);
+   var spritesheetbase64 = await generateSpritesheetImage(images, {size: {width: MAX_WIDTH, height: MAX_HEIGHT}});
 
-   var images = [];
-   var curX = 0;
-   var curY = 0;
-   var heightHeight = 0;
+   meta.imageBase64 = spritesheetbase64;
+   meta.imageName = options.outputFileName;
+   var spritesheetJson = format(images, meta, options.format);
    
-   var spritesheetJson = {
-      frames: {
-      },
-      animations: {
-      },
-      meta: {
-         "image": "",
-         "format": "RGBA8888",
-         "size": { "w": 0, "h": 0 },
-         "scale": "1",
-      }
-   };
-   
-   glob(path.join(directoryPath, match), {}, (err, files) => {
-      if (err) {
-         return console.log('Unable to scan directory: ' + err);
-      }
+   // Generate the data
+   var jsonContent = JSON.stringify(spritesheetJson);
+   var base64Data = spritesheetbase64.replace(/^data:image\/png;base64,/, "");
 
-      files.forEach(function (file) {
-         var filePath = path.join(directoryPath, file);
-         var dimensions = sizeOf(filePath);
-         var fileName = file.replace(/\.[^/.]+$/, "");
-         images.push({ src: filePath, x: 0, y: 0, dimensions, file });
-      });
-   
-      // Sort the images from smallest height to largest height
-      images.sort((a, b) => { return a.dimensions.height - b.dimensions.height });
-   
-      images.map(image => {
-         if (curX + image.dimensions.width > MAX_WIDTH) {
-            curX = 0;
-            curY = curY + heightHeight;
-            heightHeight = image.dimensions.height;
-         } else {
-            if (image.dimensions.height > heightHeight)
-               heightHeight = image.dimensions.height;
-         }
-   
-         image.x = curX;
-         image.y = curY;
-   
-         spritesheetJson.frames[image.file] = {
-            frame: { x: curX, y: curY, w: image.dimensions.width, h: image.dimensions.height },
-            rotated: false,
-            trimmed: false,
-            spriteSourceSize: { x: curX, y: curY, w: image.dimensions.width, h: image.dimensions.height },
-            sourceSize: { w: image.dimensions.width, h: image.dimensions.height }
-         }
-   
-         curX += image.dimensions.width;
-      });
-   
-      mergeImages(images, {
-         Canvas: Canvas,
-         Image: Image,
-         width: MAX_WIDTH,
-         height: MAX_HEIGHT,
-      })
-         .then(b64 => {
-            if (options.embedBase64)
-               spritesheetJson.meta.image = b64;
-            else
-               spritesheetJson.meta.image = 'spritesheet.png';
+   return {spritesheetIMAGE: base64Data, spritehseetJSON: jsonContent};
+}
 
-            var jsonContent = JSON.stringify(spritesheetJson);
-            fs.writeFile(path.join(destinationPath, "spritesheet.json"), jsonContent, 'utf8', function (err) {
-               if (err) {
-                  console.log("An error occured while writing JSON Object to File.");
-                  return console.log(err);
-               }
-   
-               console.log("spritesheet was generated successfully");
-            });
-   
-            var base64Data = b64.replace(/^data:image\/png;base64,/, "");
-            fs.writeFile(path.join(destinationPath, "spritesheet.png"), base64Data, 'base64', function (err) {
-               if (err)
-                  console.log(err);
-            });
-         });
+/**
+ * @param {Array} images 
+ * @param {Object} options
+ * @param {Object.size} 
+ */
+async function generateSpritesheetImage(images, options){
+   return mergeImages(images, {
+      Canvas: Canvas,
+      Image: Image,
+      width: options.size.width,
+      height: options.size.height,
    });
 }
